@@ -1,0 +1,42 @@
+---
+- hosts: alician-media
+  tasks:
+  - name: Create SABnzbd directory
+    become: true
+    file:
+      path: '{{ item }}'
+      state: directory
+      owner: tdooner
+    with_items:
+      - /opt/sabnzbd
+
+  - name: Download and extract SABnzbd
+    unarchive:
+      remote_src: true
+      src: https://github.com/sabnzbd/sabnzbd/releases/download/2.3.4/SABnzbd-2.3.4-src.tar.gz
+      dest: /opt/sabnzbd
+      creates: /opt/sabnzbd/SABnzbd-2.3.4
+
+  - name: Create SABnzbd virtualenv
+    command: python -m virtualenv /opt/sabnzbd/env
+    args:
+      creates: /opt/sabnzbd/env
+
+  - name: Install unrar
+    become: true
+    apt:
+      name: unrar
+
+  - name: Install par2
+    become: true
+    apt:
+      name: par2
+
+  - name: Install SABnzbd python dependencies
+    pip:
+      name: '{{ item }}'
+      virtualenv: /opt/sabnzbd/env
+    with_items:
+      - cheetah
+      - yenc
+      - sabyenc
