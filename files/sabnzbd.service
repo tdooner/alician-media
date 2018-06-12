@@ -1,0 +1,13 @@
+[Unit]
+Description=SABnzbdd Service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/sabnzbd/SABnzbd-2.3.4
+ExecStart=/opt/sabnzbd/env/bin/python SABnzbd.py
+User=tdooner
+Group=tdooner
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,13 @@
+[Unit]
+Description=Sonarr
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/NzbDrone
+ExecStart=/usr/bin/mono /opt/NzbDrone/NzbDrone.exe
+User=tdooner
+Group=tdooner
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,40 @@
+---
+- hosts: alician-media
+  handlers:
+    - name: reload systemd
+      become: true
+      command: systemctl daemon-reload
+      listen: reload systemd
+
+  tasks:
+    - name: Install Mono apt ppa
+      become: true
+      shell: 'apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF;
+      echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | tee /etc/apt/sources.list.d/mono-official-stable.list'
+      args:
+        creates: /etc/apt/sources.list.d/mono-official-stable.list
+
+    - name: Install Sonarr apt dependencies
+      become: true
+      apt:
+        name: mono-devel
+        update_cache: true
+
+    - name: Install Sonarr Apt PPA
+      shell: 'sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FDA5DFFC; sudo echo "deb http://apt.sonarr.tv/ master main" | sudo tee /etc/apt/sources.list.d/sonarr.list'
+      args:
+        creates: /etc/apt/sources.list.d/sonarr.list
+
+    - name: Install Sonarr
+      become: true
+      apt:
+        name: nzbdrone
+        update_cache: true
+
+    - name: Sonarr systemd service
+      become: true
+      copy:
+        src: files/sonarr.service
+        dest: /etc/systemd/system/sonarr.service
+      notify:
+        - reload systemd
