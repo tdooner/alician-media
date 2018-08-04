@@ -1,0 +1,14 @@
+---
+- hosts: alician-media
+  tasks:
+    - name: Install kodi apt package
+      become: true
+      apt:
+        name: kodi
+
+    - name: Add tdooner to dialout group for CEC thing
+      become: true
+      user:
+        name: tdooner
+        groups: dialout
+        append: true
