@@ -38,3 +38,10 @@
         dest: /etc/systemd/system/sonarr.service
       notify:
         - reload systemd
+
+    - name: Start/Enable sonarr service
+      become: true
+      systemd:
+        name: sonarr
+        enabled: true
+        state: started
