@@ -47,7 +47,7 @@
       - yenc
       - sabyenc
 
-  - name: Install systemd service
+  - name: Install sabnzbd systemd service
     become: true
     copy:
       src: files/sabnzbd.service
@@ -55,8 +55,9 @@
     notify:
       - reload systemd
 
-  - name: Start SABnzbd!
+  - name: Start SABnzbd service
     become: true
     systemd:
       name: sabnzbd
+      enabled: true
       state: started
