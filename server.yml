@@ -3,3 +3,4 @@
 - import_playbook: plex.yml
 - import_playbook: sonarr.yml
 - import_playbook: sabnzbd.yml
+- import_playbook: transmission.yml
