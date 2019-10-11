@@ -1,0 +1,38 @@
+---
+- hosts: alician-media
+  handlers:
+    - name: reload systemd
+      become: true
+      command: systemctl daemon-reload
+      listen: reload systemd
+
+  tasks:
+    - name: Install Radarr apt dependencies
+      become: true
+      apt:
+        name: mediainfo
+        update_cache: true
+
+    - name: Download and extract Radarr
+      become: true
+      unarchive:
+        src: https://github.com/Radarr/Radarr/releases/download/v0.2.0.1120/Radarr.develop.0.2.0.1120.linux.tar.gz
+        dest: /opt
+        creates: /opt/Radarr
+        owner: tdooner
+        remote_src: true
+
+    - name: Radarr systemd service
+      become: true
+      copy:
+        src: files/radarr.service
+        dest: /etc/systemd/system/radarr.service
+      notify:
+        - reload systemd
+
+    - name: Start/Enable radarr service
+      become: true
+      systemd:
+        name: radarr
+        enabled: true
+        state: started
