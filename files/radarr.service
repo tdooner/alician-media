@@ -1,0 +1,13 @@
+[Unit]
+Description=Radarr
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/Radarr
+ExecStart=/usr/bin/mono --debug /opt/Radarr/Radarr.exe -nobrowser
+User=tdooner
+Group=tdooner
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
