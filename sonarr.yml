@@ -21,7 +21,10 @@
         update_cache: true
 
     - name: Install Sonarr Apt PPA
-      shell: 'sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FDA5DFFC; sudo echo "deb http://apt.sonarr.tv/ master main" | sudo tee /etc/apt/sources.list.d/sonarr.list'
+      shell: |
+        apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0xA236C58F409091A18ACA53CBEBFF6B99D9B78493;
+        echo "deb http://apt.sonarr.tv/ master main" | sudo tee /etc/apt/sources.list.d/sonarr.list
+      become: true
       args:
         creates: /etc/apt/sources.list.d/sonarr.list
 

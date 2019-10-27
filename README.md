@@ -1,4 +1,8 @@
 # installation
-sudo apt install git ansible vim openssh-server make python-pip ubuntu-restricted-extras
+sudo apt install git ansible
+
+# run ansible
+ansible-playbook -i local server.yml
+
 pip install virtualenv
 

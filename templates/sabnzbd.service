@@ -3,7 +3,7 @@ Description=SABnzbdd Service
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/sabnzbd/SABnzbd-2.3.4
+WorkingDirectory=/opt/sabnzbd/SABnzbd-{{ sabnzbd_version }}
 ExecStart=/opt/sabnzbd/env/bin/python SABnzbd.py
 User=tdooner
 Group=tdooner

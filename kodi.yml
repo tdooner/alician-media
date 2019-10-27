@@ -6,9 +6,9 @@
       apt:
         name: kodi
 
-    - name: Add tdooner to dialout group for CEC thing
+    - name: Add GUI user to dialout group for CEC thing
       become: true
       user:
-        name: tdooner
+        name: '{{ ansible_user }}'
         groups: dialout
         append: true

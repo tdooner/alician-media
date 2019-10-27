@@ -19,7 +19,7 @@
         src: https://github.com/Radarr/Radarr/releases/download/v0.2.0.1120/Radarr.develop.0.2.0.1120.linux.tar.gz
         dest: /opt
         creates: /opt/Radarr
-        owner: tdooner
+        owner: '{{ ansible_user }}'
         remote_src: true
 
     - name: Radarr systemd service

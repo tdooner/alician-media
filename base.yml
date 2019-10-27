@@ -1,0 +1,52 @@
+
+---
+- hosts: alician-media
+  tasks:
+    - name: Install packages
+      become: true
+      apt:
+        name: '{{ item }}'
+      with_items:
+        - vim
+        - openssh-server
+        - make
+        - python-pip
+        - ubuntu-restricted-extras
+        - zfsutils-linux
+
+    - name: Check if Caps is mapped to Control
+      shell: setxkbmap -query | grep ctrl:nocaps
+      changed_when: caps_to_control.rc == 1
+      failed_when: caps_to_control.rc > 1
+      register: caps_to_control
+
+    - name: Remap Caps to Control
+      shell: setxkbmap -option ctrl:nocaps && gsettings set org.gnome.settings-daemon.plugins.keyboard active false
+      when: caps_to_control.rc == 1
+
+    - name: Get Tom's SSH keys from Github
+      uri:
+        url: https://github.com/tdooner.keys
+        return_content: true
+      register: github_keys
+
+    - name: Set up SSH keys for {{ ansible_user }}
+      authorized_key:
+        user: '{{ ansible_user }}'
+        key: '{{ github_keys.content }}'
+
+    - name: Create media group to own the files
+      become: true
+      group:
+        name: media
+        state: present
+
+    - name: Add tdooner and tom to "media" group
+      become: true
+      user:
+        name: '{{ item }}'
+        groups: media
+        append: true
+      with_items:
+        - {{ ansible_user }}
+        - {{ media_user }}
