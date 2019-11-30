@@ -23,6 +23,7 @@
     - name: Remap Caps to Control
       shell: setxkbmap -option ctrl:nocaps && gsettings set org.gnome.settings-daemon.plugins.keyboard active false
       when: caps_to_control.rc == 1
+      ignore_errors: yes
 
     - name: Get Tom's SSH keys from Github
       uri:
