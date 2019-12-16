@@ -1,5 +1,8 @@
 ---
 - hosts: alician-media
+  vars:
+    tautulli_version: 2.1.39
+
   handlers:
     - name: reload systemd
       become: true
@@ -19,3 +22,37 @@
         name: plex
         groups: media
         append: true
+
+    - name: Make Tautulli directory
+      become: true
+      file:
+        path: /opt/tautulli
+        state: directory
+        owner: plex
+        group: media
+        mode: 0775
+
+    - name: Download Tautulli
+      become: true
+      unarchive:
+        remote_src: yes
+        src: "https://github.com/Tautulli/Tautulli/archive/v{{ tautulli_version }}.tar.gz"
+        creates: /opt/tautulli/Tautulli-{{ tautulli_version }}
+        dest: /opt/tautulli
+        owner: plex
+        group: media
+
+    - name: Install Tautulli systemd service
+      become: true
+      template:
+        src: templates/tautulli.service
+        dest: /etc/systemd/system/tautulli.service
+      notify:
+        - reload systemd
+
+    - name: Start Tautulli service
+      become: true
+      systemd:
+        name: tautulli
+        enabled: true
+        state: started
