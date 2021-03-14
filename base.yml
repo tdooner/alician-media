@@ -55,7 +55,7 @@
     - name: Create media group to own the files
       become: true
       group:
-        name: media
+        name: '{{ media_group }}'
         state: present
 
     - name: Add tdooner and tom to "media" group
@@ -64,6 +64,7 @@
         name: '{{ item }}'
         groups: media
         append: true
+        shell: /bin/bash
       with_items:
         - '{{ ansible_user }}'
         - '{{ media_user }}'

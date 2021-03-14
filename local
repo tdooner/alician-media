@@ -1,1 +1,1 @@
-alician-media ansible_host=localhost ansible_connection=local ansible_user=tom media_user=tdooner
+alician-media ansible_host=localhost ansible_connection=local ansible_user=tom media_user=tdooner media_group=media

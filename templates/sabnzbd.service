@@ -5,8 +5,8 @@ Description=SABnzbdd Service
 Type=simple
 WorkingDirectory=/opt/sabnzbd/SABnzbd-{{ sabnzbd_version }}
 ExecStart=/opt/sabnzbd/env/bin/python SABnzbd.py
-User=tdooner
-Group=tdooner
+User={{ media_user }}
+Group={{ media_group }}
 Restart=on-failure
 
 [Install]
