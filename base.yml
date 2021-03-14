@@ -36,6 +36,22 @@
         user: '{{ ansible_user }}'
         key: '{{ github_keys.content }}'
 
+    - name: Configure SSH to forbid password authentication
+      become: true
+      register: updated_ssh_config
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^(#)?PasswordAuthentication (yes|no)'
+        line: 'PasswordAuthentication no'
+        validate: '/usr/sbin/sshd -f %s -t'
+
+    - name: Restart ssh server
+      become: true
+      service:
+        name: ssh
+        state: restarted
+      when: updated_ssh_config is success
+
     - name: Create media group to own the files
       become: true
       group:
