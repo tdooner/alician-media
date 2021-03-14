@@ -5,6 +5,10 @@
       become: true
       command: systemctl daemon-reload
       listen: reload systemd
+    - name: restart radarr
+      become: true
+      command: systemctl restart radarr
+      listen: restart radarr
 
   tasks:
     - name: Install Radarr apt dependencies
@@ -24,11 +28,12 @@
 
     - name: Radarr systemd service
       become: true
-      copy:
-        src: files/radarr.service
+      template:
+        src: templates/radarr.service
         dest: /etc/systemd/system/radarr.service
       notify:
         - reload systemd
+        - restart radarr
 
     - name: Start/Enable radarr service
       become: true

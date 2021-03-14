@@ -5,9 +5,11 @@ Description=Radarr
 Type=simple
 WorkingDirectory=/opt/Radarr
 ExecStart=/usr/bin/mono --debug /opt/Radarr/Radarr.exe -nobrowser
-User=tdooner
-Group=tdooner
+User={{ media_user }}
+Group={{ media_group }}
 Restart=on-failure
+RuntimeMaxSec=604800    # Restart every week to limit memory leaking
+MemoryMax=2G
 
 [Install]
 WantedBy=multi-user.target

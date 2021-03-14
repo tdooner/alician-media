@@ -8,6 +8,10 @@
       become: true
       command: systemctl daemon-reload
       listen: reload systemd
+    - name: restart sabnzbd
+      become: true
+      command: systemctl restart sabnzbd
+      listen: restart sabnzbd
 
   tasks:
   - name: Create SABnzbd directory
@@ -47,6 +51,7 @@
     with_items:
       - unrar
       - par2
+      - p7zip
 
   - name: Install SABnzbd python dependencies
     pip:
@@ -64,6 +69,7 @@
       dest: /etc/systemd/system/sabnzbd.service
     notify:
       - reload systemd
+      - restart sabnzbd
 
   - name: Start SABnzbd service
     become: true

@@ -5,9 +5,10 @@ Description=Sonarr
 Type=simple
 WorkingDirectory=/opt/NzbDrone
 ExecStart=/usr/bin/mono /opt/NzbDrone/NzbDrone.exe
-User=tdooner
-Group=tdooner
+User={{ media_user }}
+Group={{ media_group }}
 Restart=on-failure
+MemoryMax=2G
 
 [Install]
 WantedBy=multi-user.target

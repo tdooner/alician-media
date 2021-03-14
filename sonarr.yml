@@ -5,6 +5,10 @@
       become: true
       command: systemctl daemon-reload
       listen: reload systemd
+    - name: restart sonarr
+      become: true
+      command: systemctl restart sonarr
+      listen: restart sonarr
 
   tasks:
     - name: Install Mono apt ppa
@@ -36,11 +40,12 @@
 
     - name: Sonarr systemd service
       become: true
-      copy:
-        src: files/sonarr.service
+      template:
+        src: templates/sonarr.service
         dest: /etc/systemd/system/sonarr.service
       notify:
         - reload systemd
+        - restart sonarr
 
     - name: Start/Enable sonarr service
       become: true
