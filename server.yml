@@ -6,3 +6,4 @@
 - import_playbook: radarr.yml
 - import_playbook: sabnzbd.yml
 - import_playbook: deluge.yml
+- import_playbook: docker.yml
