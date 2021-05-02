@@ -7,3 +7,4 @@
 - import_playbook: sabnzbd.yml
 - import_playbook: deluge.yml
 - import_playbook: docker.yml
+- import_playbook: samba.yml
