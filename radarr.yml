@@ -20,7 +20,7 @@
     - name: Download and extract Radarr
       become: true
       unarchive:
-        src: https://github.com/Radarr/Radarr/releases/download/v0.2.0.1120/Radarr.develop.0.2.0.1120.linux.tar.gz
+        src: https://github.com/Radarr/Radarr/releases/download/v4.4.4.7068/Radarr.master.4.4.4.7068.linux-core-x64.tar.gz
         dest: /opt
         creates: /opt/Radarr
         owner: '{{ ansible_user }}'

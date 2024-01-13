@@ -4,7 +4,7 @@ Description=Radarr
 [Service]
 Type=simple
 WorkingDirectory=/opt/Radarr
-ExecStart=/usr/bin/mono --debug /opt/Radarr/Radarr.exe -nobrowser
+ExecStart=/opt/Radarr/Radarr -nobrowser
 User={{ media_user }}
 Group={{ media_group }}
 Restart=on-failure

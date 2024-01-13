@@ -3,8 +3,8 @@ Description=Sonarr
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/NzbDrone
-ExecStart=/usr/bin/mono /opt/NzbDrone/NzbDrone.exe
+WorkingDirectory=/usr/lib/sonarr
+ExecStart=/usr/bin/mono /usr/lib/sonarr/bin/Sonarr.exe
 User={{ media_user }}
 Group={{ media_group }}
 Restart=on-failure
