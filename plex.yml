@@ -8,6 +8,10 @@
       become: true
       command: systemctl daemon-reload
       listen: reload systemd
+    - name: reload plex ufw
+      become: true
+      command: ufw app update plexmediaserver
+      listen: reload plex ufw
 
   tasks:
     - name: Download and install Plex debian package
@@ -22,3 +26,16 @@
         name: plex
         groups: media
         append: true
+
+    - name: Configure UFW for Plex
+      become: true
+      notify: reload plex ufw
+      template:
+        dest: /etc/ufw/applications.d/plexmediaserver
+        src: templates/plex-ufw.conf
+
+    - name: Allow plex via UFW
+      become: true
+      ufw:
+        app: plexmediaserver-all
+        rule: allow

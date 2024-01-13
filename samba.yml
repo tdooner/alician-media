@@ -53,5 +53,12 @@
         port: 458
         proto: tcp
 
+    - name: Allow simple service discovery protocol
+      become: true
+      ufw:
+        rule: allow
+        port: 1900
+        proto: udp
+
 # TODO: Update config file
 # TODO: Set samba local user password somehow
