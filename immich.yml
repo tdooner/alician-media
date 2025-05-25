@@ -1,0 +1,90 @@
+---
+- hosts: alician-media
+  vars:
+    # tautulli_version: 2.1.39
+
+  handlers:
+    - name: reload systemd
+      become: true
+      command: systemctl daemon-reload
+      listen: reload systemd
+
+    - name: reload nginx
+      become: true
+      service: name=nginx state=reloaded
+
+  tasks:
+    - name: Install system dependencies
+      apt:
+        name: docker-compose-v2
+
+    - name: Create immich user
+      become: true
+      user:
+        name: immich
+        groups: media
+        append: true
+
+    - name: Create /opt/immich
+      become: true
+      file:
+        path: /opt/immich
+        state: directory
+        owner: immich
+        group: immich
+
+    - name: Create /opt/immich/docker-compose.yml
+      become: true
+      copy:
+        src: files/immich-docker-compose.yml
+        dest: /opt/immich/docker-compose.yml
+
+    - name: Create /opt/immich/.env
+      become: true
+      template:
+        src: templates/immich-example.env
+        dest: /opt/immich/.env
+
+    - name: Create photo library folder
+      become: true
+      file:
+        path: /data/Backups/Photos
+        state: directory
+        owner: immich
+        group: media
+
+    - name: Symlink photo library into /opt/immich/library
+      become: true
+      file:
+        src: /data/Backups/Photos
+        dest: /opt/immich/library
+        owner: immich
+        group: immich
+        state: link
+
+    - name: Immich systemd service
+      become: true
+      template:
+        src: templates/immich.service
+        dest: /etc/systemd/system/immich.service
+      notify:
+        - reload systemd
+
+    - name: Start/Enable sonarr service
+      become: true
+      systemd:
+        name: immich
+        enabled: true
+        state: started
+
+    # Nginx config. To get this working:
+    # 1. Make sure to run nginx.yml first
+    # 2. Create the DNS record in Cloudflare
+    # 3. Run `certbot run`
+    - name: Immich nginx site
+      become: true
+      template:
+        src: templates/immich-site.conf
+        dest: /etc/nginx/sites-enabled/photos.tdooner.com
+      notify:
+        - reload nginx
