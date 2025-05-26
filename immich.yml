@@ -88,3 +88,34 @@
         dest: /etc/nginx/sites-enabled/photos.tdooner.com
       notify:
         - reload nginx
+
+    # Generate client cert for mutual TLS authentication.
+    # Copy this to app.
+    #
+    # May need to install this via:
+    #   ansible-galaxy collection install community.crypto
+    - name: Generate private key
+      become: true
+      community.crypto.openssl_privatekey:
+        owner: immich
+        mode: '0600'
+        path: /opt/immich/client-cert.pem
+    - name: Generate cert
+      become: true
+      community.crypto.x509_certificate:
+        owner: immich
+        group: www-data
+        mode: '0640'
+        path: /opt/immich/client-cert.crt
+        privatekey_path: /opt/immich/client-cert.pem
+        provider: selfsigned
+    - name: Generate PKCS12 client certificate
+      become: true
+      community.crypto.openssl_pkcs12:
+        action: export
+        path: /opt/immich/client-cert.p12
+        friendly_name: tom_immich
+        privatekey_path: /opt/immich/client-cert.pem
+        certificate_path: /opt/immich/client-cert.crt
+        owner: immich
+        mode: '0600'
