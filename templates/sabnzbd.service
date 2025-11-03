@@ -3,10 +3,10 @@ Description=SABnzbdd Service
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/sabnzbd/SABnzbd-{{ sabnzbd_version }}
-ExecStart=/opt/sabnzbd/env/bin/python SABnzbd.py
-User={{ media_user }}
-Group={{ media_group }}
+ExecStartPre=-/usr/bin/docker stop sabnzbd_server
+ExecStartPre=-/usr/bin/docker rm sabnzbd_server
+ExecStart=/usr/bin/docker run --name=sabnzbd_server -p 8080:8080 -e TZ=America/Los_Angeles -e PUID={{ ansible_facts.getent_passwd[media_user].1 }} -e PGID={{ ansible_facts.getent_group[media_group].1 }} -v /opt/sabnzbd/config:/config -v /home/{{media_user}}/Downloads/incomplete:/incomplete-downloads -v /home/{{media_user}}/Downloads/complete:/downloads --restart=unless-stopped lscr.io/linuxserver/sabnzbd:latest
+ExecStop=/usr/bin/docker stop sabnzbd_server
 Restart=on-failure
 
 [Install]

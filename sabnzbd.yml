@@ -1,7 +1,7 @@
 ---
 - hosts: alician-media
   vars:
-    sabnzbd_version: 2.3.9
+    sabnzbd_version: 4.5.5
 
   handlers:
     - name: reload systemd
@@ -14,53 +14,22 @@
       listen: restart sabnzbd
 
   tasks:
+  - getent:
+      database: passwd
+      key: "{{ media_user }}"
+  - getent:
+      database: group
+
   - name: Create SABnzbd directory
     become: true
     file:
       path: '{{ item }}'
       state: directory
-      owner: '{{ ansible_user }}'
-      group: '{{ ansible_user }}'
+      owner: '{{ media_user }}'
+      group: '{{ media_group }}'
     with_items:
       - /opt/sabnzbd
-
-  - name: Download and extract SABnzbd
-    unarchive:
-      remote_src: true
-      src: https://github.com/sabnzbd/sabnzbd/releases/download/{{ sabnzbd_version }}/SABnzbd-{{ sabnzbd_version }}-src.tar.gz
-      dest: /opt/sabnzbd
-      creates: /opt/sabnzbd/SABnzbd-{{ sabnzbd_version }}
-
-  - name: Install Pip
-    apt:
-      name: python-pip
-
-  - name: Install Virtualenv
-    pip:
-      name: virtualenv
-
-  - name: Create SABnzbd virtualenv
-    command: python -m virtualenv /opt/sabnzbd/env
-    args:
-      creates: /opt/sabnzbd/env
-
-  - name: Install decompression utils
-    become: true
-    apt:
-      name: '{{ item }}'
-    with_items:
-      - unrar
-      - par2
-      - p7zip
-
-  - name: Install SABnzbd python dependencies
-    pip:
-      name: '{{ item }}'
-      virtualenv: /opt/sabnzbd/env
-    with_items:
-      - cheetah
-      - yenc
-      - sabyenc
+      - /opt/sabnzbd/config
 
   - name: Install sabnzbd systemd service
     become: true

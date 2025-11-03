@@ -5,14 +5,13 @@
     - name: Install packages
       become: true
       apt:
-        name: '{{ item }}'
-      with_items:
-        - vim
-        - openssh-server
-        - make
-        - python-pip
-        - ubuntu-restricted-extras
-        - zfsutils-linux
+        name:
+          - vim
+          - openssh-server
+          - make
+          - python-pip
+          - ubuntu-restricted-extras
+          - zfsutils-linux
 
     - name: Check if Caps is mapped to Control
       shell: setxkbmap -query | grep ctrl:nocaps

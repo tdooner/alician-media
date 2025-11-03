@@ -1,2 +1,2 @@
 all:
-	ansible-playbook server.yml
+	ansible-playbook -i localhost server.yml
