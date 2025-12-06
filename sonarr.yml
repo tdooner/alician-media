@@ -11,45 +11,35 @@
       listen: restart sonarr
 
   tasks:
-    - name: Install Mono apt ppa
-      become: true
-      shell: 'apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF;
-      echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | tee /etc/apt/sources.list.d/mono-official-stable.list'
-      args:
-        creates: /etc/apt/sources.list.d/mono-official-stable.list
+  - getent:
+      database: passwd
+      key: "{{ media_user }}"
+  - getent:
+      database: group
 
-    - name: Install Sonarr apt dependencies
-      become: true
-      apt:
-        name: mono-devel
-        update_cache: true
+  - name: Create Radarr directory
+    become: true
+    file:
+      path: '{{ item }}'
+      state: directory
+      owner: '{{ media_user }}'
+      group: '{{ media_group }}'
+    with_items:
+      - /opt/sonarr
+      - /opt/sonarr/config
 
-    - name: Install Sonarr Apt PPA
-      shell: |
-        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
-        echo "deb https://apt.sonarr.tv/ubuntu bionic main" | sudo tee /etc/apt/sources.list.d/sonarr.list
-      become: true
-      args:
-        creates: /etc/apt/sources.list.d/sonarr.list
+  - name: Install sonarr systemd service
+    become: true
+    template:
+      src: templates/sonarr.service
+      dest: /etc/systemd/system/sonarr.service
+    notify:
+      - reload systemd
+      - restart sonarr
 
-    - name: Install Sonarr
-      become: true
-      apt:
-        name: sonarr
-        update_cache: true
-
-    - name: Sonarr systemd service
-      become: true
-      template:
-        src: templates/sonarr.service
-        dest: /etc/systemd/system/sonarr.service
-      notify:
-        - reload systemd
-        - restart sonarr
-
-    - name: Start/Enable sonarr service
-      become: true
-      systemd:
-        name: sonarr
-        enabled: true
-        state: started
+  - name: Start sonarr service
+    become: true
+    systemd:
+      name: sonarr
+      enabled: true
+      state: started

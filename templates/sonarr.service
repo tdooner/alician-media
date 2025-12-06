@@ -3,12 +3,23 @@ Description=Sonarr
 
 [Service]
 Type=simple
-WorkingDirectory=/usr/lib/sonarr
-ExecStart=/usr/bin/mono /usr/lib/sonarr/bin/Sonarr.exe
-User={{ media_user }}
-Group={{ media_group }}
+ExecStartPre=-/usr/bin/docker stop sonarr_server
+ExecStartPre=-/usr/bin/docker rm sonarr_server
+ExecStart=/usr/bin/docker run \
+  --name=sonarr_server \
+  -p 8989:8989 \
+  -e TZ=America/Los_Angeles \
+  -e PUID={{ ansible_facts.getent_passwd[media_user].1 }} \
+  -e PGID={{ ansible_facts.getent_group[media_group].1 }} \
+  -v /opt/sonarr/config:/config \
+  -v "/data/TV Shows:/data/TV Shows" \
+  -v /home/{{media_user}}/Downloads/complete:/downloads \
+  --network=media \
+  --restart=unless-stopped \
+  lscr.io/linuxserver/sonarr:latest
+ExecStop=/usr/bin/docker stop sonarr_server
 Restart=on-failure
-MemoryMax=2G
+SyslogIdentifier=sonarr
 
 [Install]
 WantedBy=multi-user.target

@@ -1,8 +1,5 @@
 ---
 - hosts: alician-media
-  vars:
-    sabnzbd_version: 4.5.5
-
   handlers:
     - name: reload systemd
       become: true

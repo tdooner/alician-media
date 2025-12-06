@@ -3,13 +3,23 @@ Description=Radarr
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/Radarr
-ExecStart=/opt/Radarr/Radarr -nobrowser
-User={{ media_user }}
-Group={{ media_group }}
+ExecStartPre=-/usr/bin/docker stop radarr_server
+ExecStartPre=-/usr/bin/docker rm radarr_server
+ExecStart=/usr/bin/docker run \
+  --name=radarr_server \
+  -p 7878:7878 \
+  -e TZ=America/Los_Angeles \
+  -e PUID={{ ansible_facts.getent_passwd[media_user].1 }} \
+  -e PGID={{ ansible_facts.getent_group[media_group].1 }} \
+  -v /opt/radarr/config:/config \
+  -v /data/Movies:/data/Movies \
+  -v /home/{{media_user}}/Downloads/complete:/downloads \
+  --network=media \
+  --restart=unless-stopped \
+  lscr.io/linuxserver/radarr:latest
+ExecStop=/usr/bin/docker stop radarr_server
 Restart=on-failure
-RuntimeMaxSec=604800    # Restart every week to limit memory leaking
-MemoryMax=2G
+SyslogIdentifier=radarr
 
 [Install]
 WantedBy=multi-user.target

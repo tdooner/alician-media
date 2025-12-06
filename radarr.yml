@@ -11,33 +11,35 @@
       listen: restart radarr
 
   tasks:
-    - name: Install Radarr apt dependencies
-      become: true
-      apt:
-        name: mediainfo
-        update_cache: true
+  - getent:
+      database: passwd
+      key: "{{ media_user }}"
+  - getent:
+      database: group
 
-    - name: Download and extract Radarr
-      become: true
-      unarchive:
-        src: https://github.com/Radarr/Radarr/releases/download/v4.4.4.7068/Radarr.master.4.4.4.7068.linux-core-x64.tar.gz
-        dest: /opt
-        creates: /opt/Radarr
-        owner: '{{ ansible_user }}'
-        remote_src: true
+  - name: Create Radarr directory
+    become: true
+    file:
+      path: '{{ item }}'
+      state: directory
+      owner: '{{ media_user }}'
+      group: '{{ media_group }}'
+    with_items:
+      - /opt/radarr
+      - /opt/radarr/config
 
-    - name: Radarr systemd service
-      become: true
-      template:
-        src: templates/radarr.service
-        dest: /etc/systemd/system/radarr.service
-      notify:
-        - reload systemd
-        - restart radarr
+  - name: Install radarr systemd service
+    become: true
+    template:
+      src: templates/radarr.service
+      dest: /etc/systemd/system/radarr.service
+    notify:
+      - reload systemd
+      - restart radarr
 
-    - name: Start/Enable radarr service
-      become: true
-      systemd:
-        name: radarr
-        enabled: true
-        state: started
+  - name: Start radarr service
+    become: true
+    systemd:
+      name: radarr
+      enabled: true
+      state: started
