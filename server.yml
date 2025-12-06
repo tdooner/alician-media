@@ -1,12 +1,11 @@
 ---
 - import_playbook: base.yml
-- import_playbook: kodi.yml
 - import_playbook: plex.yml
 - import_playbook: sonarr.yml
 - import_playbook: radarr.yml
 - import_playbook: sabnzbd.yml
-- import_playbook: deluge.yml
 - import_playbook: docker.yml
 - import_playbook: samba.yml
 - import_playbook: immich.yml
 - import_playbook: jellyfin.yml
+- import_playbook: watchtower.yml

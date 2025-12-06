@@ -1,0 +1,18 @@
+[Unit]
+Description=Watchtower
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker stop watchtower
+ExecStartPre=-/usr/bin/docker rm watchtower
+ExecStart=/usr/bin/docker run \
+  --name=watchtower \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --restart=unless-stopped \
+  containrrr/watchtower
+ExecStop=/usr/bin/docker stop watchtower
+Restart=on-failure
+SyslogIdentifier=watchtower
+
+[Install]
+WantedBy=multi-user.target
