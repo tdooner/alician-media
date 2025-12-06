@@ -8,8 +8,17 @@ Type=simple
 WorkingDirectory=/opt/jellyfin
 ExecStartPre=-/usr/bin/docker stop jellyfin_server
 ExecStartPre=-/usr/bin/docker rm jellyfin_server
-ExecStart=/usr/bin/docker run --name=jellyfin_server --user={{ ansible_facts.getent_passwd["jellyfin"].1 }} --group-add={{ ansible_facts.getent_group[media_group].1 }} -v /opt/jellyfin/config:/config -v /opt/jellyfin/cache:/cache -v /data/:/media --net=host jellyfin/jellyfin:latest
+ExecStart=/usr/bin/docker run \
+  --name=jellyfin_server \
+  --user={{ ansible_facts.getent_passwd["jellyfin"].1 }} \
+  --group-add={{ ansible_facts.getent_group[media_group].1 }} \
+  -v /opt/jellyfin/config:/config \
+  -v /opt/jellyfin/cache:/cache \
+  -v /data/:/media \
+  --net=host \
+  jellyfin/jellyfin:latest
 ExecStop=/usr/bin/docker stop jellyfin_server
+SyslogIdentifier=jellyfin
 
 [Install]
 WantedBy=multi-user.target

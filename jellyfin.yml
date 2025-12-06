@@ -8,7 +8,6 @@
       become: true
       command: systemctl daemon-reload
       listen: reload systemd
-
     - name: reload nginx
       become: true
       service: name=nginx state=reloaded
@@ -18,10 +17,6 @@
         database: passwd
     - getent:
         database: group
-
-    - name: Install system dependencies
-      apt:
-        name: docker-compose-v2
 
     - name: Create jellyfin user
       become: true
