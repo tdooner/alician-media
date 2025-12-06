@@ -1,0 +1,12 @@
+---
+- name: reload smbd
+  become: true
+  service: name=smbd state=restarted
+- name: reload avahi
+  become: true
+  service: name=avahi-daemon state=restarted
+- name: reload netatalk
+  become: true
+  service: name=netatalk state=restarted
+
+

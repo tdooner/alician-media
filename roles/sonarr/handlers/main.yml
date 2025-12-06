@@ -1,0 +1,10 @@
+---
+- name: reload systemd
+  become: true
+  command: systemctl daemon-reload
+  listen: reload systemd
+- name: restart sonarr
+  become: true
+  command: systemctl restart sonarr
+  listen: restart sonarr
+

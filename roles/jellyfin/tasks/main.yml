@@ -1,0 +1,39 @@
+---
+- getent:
+    database: passwd
+- getent:
+    database: group
+
+- name: Create jellyfin user
+  become: true
+  user:
+    name: jellyfin
+    groups: media
+    append: true
+
+- name: Create /opt/jellyfin directories
+  become: true
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: jellyfin
+    group: jellyfin
+  with_items:
+    - /opt/jellyfin
+    - /opt/jellyfin/cache
+    - /opt/jellyfin/config
+
+- name: jellyfin systemd service
+  become: true
+  template:
+    src: templates/jellyfin.service
+    dest: /etc/systemd/system/jellyfin.service
+  notify:
+    - reload systemd
+
+- name: Start/Enable jellyfin service
+  become: true
+  systemd:
+    name: jellyfin
+    enabled: true
+    state: started

@@ -1,9 +1,0 @@
----
-- hosts: alician-media
-  tasks:
-    - name: Install Docker
-      become: true
-      apt:
-        name: '{{ item }}'
-      with_items:
-        - docker.io

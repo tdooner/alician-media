@@ -1,0 +1,105 @@
+- name: Install system dependencies
+  apt:
+    name: docker-compose-v2
+
+- name: Create immich user
+  become: true
+  user:
+    name: immich
+    groups: media
+    append: true
+
+- name: Create /opt/immich
+  become: true
+  file:
+    path: /opt/immich
+    state: directory
+    owner: immich
+    group: immich
+
+- name: Create /opt/immich/docker-compose.yml
+  become: true
+  copy:
+    src: files/immich-docker-compose.yml
+    dest: /opt/immich/docker-compose.yml
+
+- name: Create /opt/immich/.env
+  become: true
+  template:
+    src: templates/immich-example.env
+    dest: /opt/immich/.env
+
+- name: Create photo library folder
+  become: true
+  file:
+    path: /data/Backups/Photos
+    state: directory
+    owner: immich
+    group: media
+
+- name: Symlink photo library into /opt/immich/library
+  become: true
+  file:
+    src: /data/Backups/Photos
+    dest: /opt/immich/library
+    owner: immich
+    group: immich
+    state: link
+
+- name: Immich systemd service
+  become: true
+  template:
+    src: templates/immich.service
+    dest: /etc/systemd/system/immich.service
+  notify:
+    - reload systemd
+
+- name: Start/Enable immich service
+  become: true
+  systemd:
+    name: immich
+    enabled: true
+    state: started
+
+    # Nginx config. To get this working:
+    # 1. Make sure to run nginx.yml first
+    # 2. Create the DNS record in Cloudflare
+    # 3. Run `certbot run`
+- name: Immich nginx site
+  become: true
+  template:
+    src: templates/immich-site.conf
+    dest: /etc/nginx/sites-enabled/photos.tdooner.com
+  notify:
+    - reload nginx
+
+    # Generate client cert for mutual TLS authentication.
+    # Copy this to app.
+    #
+    # May need to install this via:
+    #   ansible-galaxy collection install community.crypto
+- name: Generate private key
+  become: true
+  community.crypto.openssl_privatekey:
+    owner: immich
+    mode: '0600'
+    path: /opt/immich/client-cert.pem
+- name: Generate cert
+  become: true
+  community.crypto.x509_certificate:
+    owner: immich
+    group: www-data
+    mode: '0640'
+    path: /opt/immich/client-cert.crt
+    privatekey_path: /opt/immich/client-cert.pem
+    provider: selfsigned
+- name: Generate PKCS12 client certificate
+  become: true
+  community.crypto.openssl_pkcs12:
+    action: export
+    path: /opt/immich/client-cert.p12
+    friendly_name: tom_immich
+    privatekey_path: /opt/immich/client-cert.pem
+    certificate_path: /opt/immich/client-cert.crt
+    owner: immich
+    mode: '0600'

@@ -1,0 +1,8 @@
+---
+- name: reload systemd
+  become: true
+  command: systemctl daemon-reload
+  listen: reload systemd
+- name: reload nginx
+  become: true
+  service: name=nginx state=reloaded

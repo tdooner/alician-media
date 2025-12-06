@@ -1,0 +1,10 @@
+---
+- name: reload systemd
+  become: true
+  command: systemctl daemon-reload
+  listen: reload systemd
+- name: reload plex ufw
+  become: true
+  command: ufw app update plexmediaserver
+  listen: reload plex ufw
+

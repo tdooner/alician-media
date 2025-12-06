@@ -1,0 +1,33 @@
+---
+- getent:
+    database: passwd
+    key: "{{ media_user }}"
+- getent:
+    database: group
+
+- name: Create Radarr directory
+  become: true
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '{{ media_user }}'
+    group: '{{ media_group }}'
+  with_items:
+    - /opt/radarr
+    - /opt/radarr/config
+
+- name: Install radarr systemd service
+  become: true
+  template:
+    src: templates/radarr.service
+    dest: /etc/systemd/system/radarr.service
+  notify:
+    - reload systemd
+    - restart radarr
+
+- name: Start radarr service
+  become: true
+  systemd:
+    name: radarr
+    enabled: true
+    state: started

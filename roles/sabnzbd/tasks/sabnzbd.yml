@@ -1,0 +1,33 @@
+---
+- getent:
+    database: passwd
+    key: "{{ media_user }}"
+- getent:
+    database: group
+
+- name: Create SABnzbd directory
+  become: true
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '{{ media_user }}'
+    group: '{{ media_group }}'
+  with_items:
+    - /opt/sabnzbd
+    - /opt/sabnzbd/config
+
+- name: Install sabnzbd systemd service
+  become: true
+  template:
+    src: templates/sabnzbd.service
+    dest: /etc/systemd/system/sabnzbd.service
+  notify:
+    - reload systemd
+    - restart sabnzbd
+
+- name: Start SABnzbd service
+  become: true
+  systemd:
+    name: sabnzbd
+    enabled: true
+    state: started

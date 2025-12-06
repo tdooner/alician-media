@@ -1,0 +1,11 @@
+---
+- name: reload systemd
+  become: true
+  command: systemctl daemon-reload
+  listen: reload systemd
+- name: restart radarr
+  become: true
+  command: systemctl restart watchtower
+  listen: restart watchtower
+
+

@@ -1,0 +1,9 @@
+---
+- name: reload systemd
+  become: true
+  command: systemctl daemon-reload
+  listen: reload systemd
+- name: restart radarr
+  become: true
+  command: systemctl restart radarr
+  listen: restart radarr

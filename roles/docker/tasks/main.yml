@@ -1,0 +1,11 @@
+---
+- name: Install Docker
+  become: true
+  apt:
+    name: '{{ item }}'
+  with_items:
+    - docker.io
+
+- name: Create docker network
+  become: true
+  shell: docker network inspect media || docker network create media

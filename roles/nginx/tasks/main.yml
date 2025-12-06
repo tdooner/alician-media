@@ -1,0 +1,48 @@
+- name: Install certbot PPA
+  become: true
+  apt_repository:
+    repo: ppa:certbot/certbot
+
+- name: Install packages
+  become: true
+  apt:
+    name: '{{ item }}'
+  with_items:
+    - nginx
+    - python-certbot-nginx
+
+- name: Install nginx configuration
+  become: true
+  template:
+    src: templates/nginx-site.conf
+    dest: /etc/nginx/sites-enabled/plex.tdooner.com
+  notify:
+    - reload nginx
+
+- name: Install nginx username/password config
+  become: true
+  template:
+    src: templates/nginx-htpasswd.conf
+    dest: /etc/nginx/htpasswd
+
+- name: Allow nginx HTTP via ufw
+  become: true
+  ufw:
+    rule: allow
+    port: 80
+
+- name: Allow nginx TLS via ufw
+  become: true
+  ufw:
+    rule: allow
+    port: 443
+
+- name: Certbot refresh certificate
+  become: true
+  cron:
+    name: Refresh plex.tdooner.com TLS
+    user: root
+    minute: 0
+    hour: 0
+    day: "*/10"
+    job: "certbot renew"

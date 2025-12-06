@@ -1,0 +1,16 @@
+---
+- name: Install watchtower systemd service
+  become: true
+  template:
+    src: templates/watchtower.service
+    dest: /etc/systemd/system/watchtower.service
+  notify:
+    - reload systemd
+    - restart watchtower
+
+- name: Start watchtower service
+  become: true
+  systemd:
+    name: watchtower
+    enabled: true
+    state: started

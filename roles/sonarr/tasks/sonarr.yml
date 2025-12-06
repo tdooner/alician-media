@@ -1,0 +1,33 @@
+---
+- getent:
+    database: passwd
+    key: "{{ media_user }}"
+- getent:
+    database: group
+
+- name: Create Radarr directory
+  become: true
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '{{ media_user }}'
+    group: '{{ media_group }}'
+  with_items:
+    - /opt/sonarr
+    - /opt/sonarr/config
+
+- name: Install sonarr systemd service
+  become: true
+  template:
+    src: templates/sonarr.service
+    dest: /etc/systemd/system/sonarr.service
+  notify:
+    - reload systemd
+    - restart sonarr
+
+- name: Start sonarr service
+  become: true
+  systemd:
+    name: sonarr
+    enabled: true
+    state: started

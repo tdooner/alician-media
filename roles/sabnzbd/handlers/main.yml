@@ -1,0 +1,10 @@
+---
+- name: reload systemd
+  become: true
+  command: systemctl daemon-reload
+  listen: reload systemd
+- name: restart sabnzbd
+  become: true
+  command: systemctl restart sabnzbd
+  listen: restart sabnzbd
+
