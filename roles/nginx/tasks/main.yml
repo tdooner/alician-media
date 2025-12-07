@@ -6,10 +6,9 @@
 - name: Install packages
   become: true
   apt:
-    name: '{{ item }}'
-  with_items:
-    - nginx
-    - python-certbot-nginx
+    name:
+      - nginx
+      - python-certbot-nginx
 
 - name: Install nginx configuration
   become: true

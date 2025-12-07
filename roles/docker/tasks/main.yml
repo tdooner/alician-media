@@ -2,9 +2,8 @@
 - name: Install Docker
   become: true
   apt:
-    name: '{{ item }}'
-  with_items:
-    - docker.io
+    name:
+      - docker.io
 
 - name: Create docker network
   become: true

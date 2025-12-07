@@ -70,7 +70,7 @@
   become: true
   cron:
     name: "Remove download folders after two weeks"
-    minute: 0
-    hour: 0
+    minute: "0"
+    hour: "0"
     job: "find ~/Downloads/ -maxdepth 2 -mindepth 2 -type d -mtime +14 -exec rm -rf {} \\;"
     user: '{{ media_user }}'
